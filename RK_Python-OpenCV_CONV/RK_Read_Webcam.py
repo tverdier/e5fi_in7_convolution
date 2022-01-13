@@ -36,3 +36,6 @@ while success and cv2.waitKey(1) == -1:
 # Ferme la fenêtre intitulée 'MyWindow'
 cv2.destroyWindow('MyWindow')
 
+# Ferme le fichier vidéo ou la webcam associé à l'objet VideoCapture
+cameraCapture.release()
+

@@ -28,7 +28,9 @@ while True:
     # Affiche la frame
     cv2.imshow("Video", img)
 
+    # Attend une milliseconde
     #cv2.waitKey(1)
+    
     # Attend une milliseconde et vérifie que la touche appuyée par l'utilisateur
     if cv2.waitKey(1) == ord('q'):
         # Si l'utilisateur a pressé la touche Q, on sort de la boucle infinie
