@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 """
+Edited by Céline NGUYEN, Pierre LEBAS et Thibault VERDIER
 TP Convolution
 """
 
