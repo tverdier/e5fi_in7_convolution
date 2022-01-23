@@ -56,7 +56,7 @@ if data_dir.exists():
             # Lecture de l'image
             image = Image.open(os.path.join("./flowers/",label,filename))
             image.load()
-            image = np.asarray(image, dtype="float32" )
+            image = np.asarray(image, dtype="float32")
             # Ajout au dataset de l'image associée à son dossier
             dataset.append((image, label))
             
@@ -98,48 +98,83 @@ if data_dir.exists():
     # Initialisation du tableau des images redimensionnées
     resized = []
     
+    print("Redimensionne les images du dataset en 32x32..")
     # Redimensionne les images du dataset et insères ces dernières dans le tableau resized
-    for d in dataset:
-        resized.append((cv2.resize(d[0], image_size), d[1]))
+    for (image, label) in dataset:
+        resized.append((cv2.resize(image, image_size), label))
     
     # On considère maintenant le dataset comme étant les images redimensionnées
     dataset = resized
     
+    print("Construction d'un tableau avec  seulement les images en 32x32..")
+    # Création d'un tableau images qui contient seulement les images du dataset
     images = np.asarray([d[0] for d in dataset])
+    # Vérifie la forme du tableau (nbCases1D, nbCases2D, ..., nbCasesND)
     print(images.shape)
     
+    print("Transformation des images 32x32 en features..")
+    # Modifie la forme du tableau pour les images soient "applaties"/transformées en un tableau 1D
     images = images.reshape(len(images), -1)
+    # Vérifie la forme du tableau après modification (nbCases1D, nbCases2D, ..., nbCasesND)
     print(images.shape)
     
-    images = images.astype(np.float32) / 255.
+    print("Réencodage en float32..")
+    # Réencodage des valeurs de chaque image en float32 et "normalisation" des valeurs entre 0 et 255
+    images = np.asarray(images, dtype=np.float32) / 255.
     
+    # Import d'un objet utilisé comme modèle de classification k-means
     from sklearn.cluster import MiniBatchKMeans
-    number_clusters = 5
-    kmeans = MiniBatchKMeans(n_clusters=number_clusters)
-    kmeans.fit(images)
     
-    kmeans.labels_
+    print("Création du modèle K-Means..")
+    # Indique le nombre de classes à classifier
+    number_clusters = 5
+    # Définition d'un modèle K-Means
+    kmeans = MiniBatchKMeans(n_clusters=number_clusters)
+    
+    print("Entraînement du modèle K-Means..")
+    # Entraînement du modèle
+    if not images.all() == None:
+        kmeans.fit(images)
+    
+    print(kmeans.labels_)
+    print(kmeans.n_clusters)
     
     def map_clusters_classes(kmeans, classes):
+        print("Mapping..")
         mapping = {}
         
-        for i in range(kmeans.n_clusters):
-            #...
-                
+        classes_unique = np.unique(classes)
+        print("n_clusters :", kmeans.n_clusters)
+        for i in range(0, kmeans.n_clusters):
+            print("i=", i, " labels[i]=", classes_unique[i])
+            mapping[i] = classes_unique[i]
         return mapping
 
     def inference(kmeans, images, classes):
+        print("Inference..")
+        
         mapping = map_clusters_classes(kmeans, classes)
+        print("mapping : ", mapping)
+        
+        # Renvoie les labels auquels sont associés chaque images du dataset
         clusters = kmeans.predict(images)
+        print("clusters : ", clusters)
+        
+        # Définition des prédictions
         predicted_classes = np.zeros(len(clusters)).astype(np.uint8)
+        
         for i in range(len(clusters)):
             predicted_classes[i] = mapping[clusters[i]]
+            
+        print("predictions : ", predicted_classes)
         return predicted_classes
     
     labels_classes_mapping = {"daisy":0,"dandelion":1,"rose":2,"sunflower":3,"tulip":4}
+    
     classes = [labels_classes_mapping[d[1]] for d in dataset]
     classes = np.asarray(classes)
     predicted_classes = inference(kmeans, images, classes)
+    
     print(predicted_classes[:20])
     print(classes[:20])
     
@@ -150,8 +185,13 @@ if data_dir.exists():
     number_clusters = [5, 10, 16, 36, 64, 144, 256, 1024, 2048, 4098]
     acc_list = []
 
-    for n_clusters in number_clusters:
-        #...
+    for i in number_clusters:
+        #... TODO
+        kmeans = MiniBatchKMeans(n_clusters=i)
+        kmeans.fit(images)
+        predicted_classes = inference(kmeans, images, classes)
+        acc = accuracy_score(classes, predicted_classes)
+        acc_list.append(acc)
         print('Accuracy: {}\n'.format(acc))
         
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
