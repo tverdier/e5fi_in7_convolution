@@ -130,52 +130,59 @@ if data_dir.exists():
     
     print("Affiche les 9 premières images du dataset")
     plt.show()
+
+    print("Construction du modèle")
+    # Définition d'extracteurs de features (variables caractéristiques)
+
+    print("Initialisation")
+    # Initialisation des paramètres de test du modèle
+    rawImages = []
+    features = []
+    labels = []
+
+    # Définition d'un dictionnaire permettant d'associer une espèce de fleur à un nombre
+    labels_classes_mapping = {"daisy":0,"dandelion":1,"rose":2,"sunflower":3,"tulip":4}
+
+    print("Séparation des features et des labels")
+    for (image, label) in dataset:
+        rawImages.append(image_to_feature_vector(image))
+        features.append(extract_color_histogram(image))
+        labels.append(labels_classes_mapping[label])
+
+    print("Mise en forme et vérification")
+    # Transformation des tableaux en tableau numpy
+    rawImages = np.array(rawImages)
+    features = np.array(features) 
+    labels = np.array(labels)
+
+    # Affiche la forme des tableau (nbCases1D, nbCases2D, ..., nbCasesND)
+    print(rawImages.shape)
+    print(features.shape)
+    print(labels.shape)
+
+    print("Séparation de la base de test et la base d'entraînement")
+
+    # train_test_split diviser notre ensemble de données en sous-ensembles qui minimisera le risque de biais dans notre processus d'évaluation et de validation.
+    from sklearn.model_selection import train_test_split
+
+    print("Création de données d'entraînement avec les images bruts redimensionnées..")
+    (trainRawX, testRawX, trainRawY, testRawY) = train_test_split(rawImages, labels, test_size=0.25, random_state=42)
+    print("Création de données d'entraînement avec l'histogramme de l'image..")
+    (trainFeatX, testFeatX, trainFeatY, testFeatY) = train_test_split(features, labels, test_size=0.25, random_state=42)
+
+    print("Utilisation d'un modèle KNN")
     
-# Initialisation des paramètres de test du modèle
-rawImages = []
-features = []
-labels = []
+    # KNeighborsClassifier permet de classifier les données dans un modèle à l'aide de l'algorithme des k plus proches voisins
+    from sklearn.neighbors import KNeighborsClassifier
 
-# Définition d'un dictionnaire permettant d'associer une espèce de fleur à un nombre
-labels_classes_mapping = {"daisy":0,"dandelion":1,"rose":2,"sunflower":3,"tulip":4}
+    model = KNeighborsClassifier(n_neighbors=100, n_jobs=-1)
+    print("Entraînement du modèle avec les images bruts redimensionnées en 32x32..")
+    model.fit(trainRawX, trainRawY)
+    acc = model.score(testRawX, testRawY)
+    print("raw pixel accuracy: {:.2f}%".format(acc * 100))
 
-print("Séparation des features et des labels")
-for (image, label) in dataset:
-    rawImages.append(image.flatten())
-    features.append(extract_color_histogram(image).flatten())
-    labels.append(labels_classes_mapping[label])
-
-# Transformation des tableaux en tableau numpy
-rawImages = np.array(rawImages)
-features = np.array(features, dtype=object) 
-labels = np.array(labels)
-
-# Affiche la forme des tableau (nbCases1D, nbCases2D, ..., nbCasesND)
-print(rawImages.shape)
-print(features.shape)
-print(labels.shape)
-
-## Split Train / Test
-
-from sklearn.model_selection import train_test_split
-
-# print("Création de données d'entraînement avec les images bruts..")
-# (trainRawX, testRawX, trainRawY, testRawY) = train_test_split(rawImages, labels, test_size=0.25, random_state=42)
-print("Création de données d'entraînement avec l'histogramme de l'image redimensionnée en 32x32..")
-(trainFeatX, testFeatX, trainFeatY, testFeatY) = train_test_split(features, labels, test_size=0.25, random_state=42)
-
-# KNN
-
-from sklearn.neighbors import KNeighborsClassifier
-
-# model = KNeighborsClassifier(n_neighbors=100, n_jobs=-1)
-# print("Entraînement du modèle RAW..")
-# model.fit(trainRawX, trainRawY)
-# acc = model.score(testRawX, testRawY)
-# print("raw pixel accuracy: {:.2f}%".format(acc * 100))
-
-model = KNeighborsClassifier(n_neighbors=100, n_jobs=-1)
-print("Entraînement du modèle 32x32..")
-model.fit(trainFeatX, trainFeatY)
-acc = model.score(testFeatX, testFeatY)
-print("histogram accuracy: {:.2f}%".format(acc * 100))
+    model = KNeighborsClassifier(n_neighbors=100, n_jobs=-1)
+    print("Entraînement du modèle avec l'histogramme des images..")
+    model.fit(trainFeatX, trainFeatY)
+    acc = model.score(testFeatX, testFeatY)
+    print("histogram accuracy: {:.2f}%".format(acc * 100))
