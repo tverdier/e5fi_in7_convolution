@@ -1,0 +1,24 @@
+ML _ Extraction du descripteur ORB
+https://ichi.pro/fr/introduction-a-orb-oriente-fast-and-rotated-brief-72709114183887
+
+K-Means
+https://datascientest.com/algorithme-des-k-means
+https://ledatascientist.com/faire-du-clustering-avec-lalgorithme-k-means/
+
+SVM
+http://cedric.cnam.fr/vertigo/cours/ml2/tpSVMLineaires.html
+https://ledatascientist.com/support-vector-machines-svm-en-python/
+
+BOW (Bag Of Words)
+https://www.datacorner.fr/bag-of-words/
+https://lbourdois.github.io/blog/nlp/Bag-of-word/
+
+CNN (Convolutional Neural Network)
+https://openclassrooms.com/fr/courses/4470531-classez-et-segmentez-des-donnees-visuelles/5082166-quest-ce-quun-reseau-de-neurones-convolutif-ou-cnn
+https://www.ionos.fr/digitalguide/sites-internet/developpement-web/keras-tutorial/
+
+Evalutation / Mesure de performances
+https://linogaliana-teaching.netlify.app/performance/
+https://www.lovelyanalytics.com/2020/05/26/accuracy-recall-precision/
+https://openclassrooms.com/fr/courses/4297211-evaluez-les-performances-dun-modele-de-machine-learning/4308256-evaluez-un-algorithme-de-classification-qui-retourne-des-valeurs-binaires
+https://analyticsindiamag.com/evaluation-metrics-in-ml-ai-for-classification-problems-wpython-code/
